@@ -17,6 +17,13 @@ spring:
       # HikariCP connection pool (Spring Boot's default) — same role as in the Linkle diagram.
       maximum-pool-size: 5
       connection-timeout: 10000
+      data-source-properties:
+        # Disables PgJDBC's server-side prepared-statement cache. Without this,
+        # a pooled connection that prepared a statement before a schema change
+        # (e.g. an ALTER COLUMN TYPE from ddl-auto: update) can fail with
+        # "cached plan must not change result type" until that connection is
+        # recycled. Neon's docs recommend this for the same reason.
+        prepareThreshold: 0
 
   jpa:
     hibernate:
