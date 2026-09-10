@@ -9,7 +9,8 @@
   </div>
 
   <div class="rec-cafe">
-    <div class="photo">☕</div>
+    <div class="photo" th:if="${cafe.photoUrl}"><img th:src="${cafe.photoUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></div>
+    <div class="photo" th:unless="${cafe.photoUrl}"><img src="/images/record-cafe.jpg" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></div>
     <div>
       <div style="font-size:13px; font-weight:700;" th:text="${cafe.name}">カフェ名</div>
       <div style="font-size:10.5px; color:var(--ink-soft); margin-top:2px;" th:text="${cafe.address}"></div>

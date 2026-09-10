@@ -28,9 +28,11 @@
     <span style="font-weight:400; color:var(--ink-soft); font-size:11.5px;" th:text="${#lists.size(cafes)} + '件'">0件</span>
   </div>
   <div class="list">
-    <a class="row" th:each="c : ${cafes}" th:href="@{'/cafes/' + ${c.id}}">
+    <a class="row" th:each="c,it : ${cafes}" th:href="@{'/cafes/' + ${c.id}}">
       <div class="photo" th:if="${c.photoUrl}"><img th:src="${c.photoUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></div>
-      <div class="photo" th:unless="${c.photoUrl}">☕</div>
+      <div class="photo" th:unless="${c.photoUrl}">
+        <img th:src="${it.index % 2 == 0} ? '/images/nearby-1.jpg' : '/images/nearby-2.jpg'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
+      </div>
       <div class="info">
         <div class="name" th:text="${c.name}">カフェ名</div>
         <div class="meta" th:if="${c.rating}"><span class="stars">★</span> <span th:text="${#numbers.formatDecimal(c.rating,1,1)}">4.5</span></div>
