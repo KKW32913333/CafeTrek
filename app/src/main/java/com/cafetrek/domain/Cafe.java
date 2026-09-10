@@ -47,8 +47,13 @@ public class Cafe {
     @Column(length = 2000)
     private String website;
 
-    /** True once we've asked Places for the website (even if it came back null) — avoids repeat Place Details calls. */
-    private boolean websiteChecked;
+    /**
+     * True once we've asked Places for the website (even if it came back null) — avoids repeat Place Details calls.
+     * columnDefinition provides a default so Postgres can ALTER TABLE ADD COLUMN ... NOT NULL
+     * on a table that already has rows (otherwise the add-column migration fails silently).
+     */
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean websiteChecked = false;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
