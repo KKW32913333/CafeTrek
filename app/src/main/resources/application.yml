@@ -1,0 +1,74 @@
+spring:
+  application:
+    name: cafetrek
+
+  # ---- Default profile: Neon PostgreSQL (production / Render), matching Linkle's構成.
+  # Neon dashboard gives you a connection string like:
+  #   postgresql://USER:PASSWORD@HOST/DBNAME?sslmode=require
+  # Set SPRING_DATASOURCE_URL to the JDBC form of that (see README for the exact
+  # conversion), and SPRING_DATASOURCE_USERNAME / SPRING_DATASOURCE_PASSWORD to
+  # match. Falls back to a local Postgres for `docker compose up` style dev.
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/cafetrek}
+    username: ${SPRING_DATASOURCE_USERNAME:cafetrek}
+    password: ${SPRING_DATASOURCE_PASSWORD:cafetrek}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      # HikariCP connection pool (Spring Boot's default) — same role as in the Linkle diagram.
+      maximum-pool-size: 5
+      connection-timeout: 10000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+      platform: postgresql
+
+  thymeleaf:
+    cache: false
+
+server:
+  # Render injects PORT at runtime; 10000 mirrors the Linkle diagram's convention for local default.
+  port: ${PORT:10000}
+
+cafetrek:
+  demo-user-id: 1
+
+webpush:
+  # Generate with: npx web-push generate-vapid-keys
+  public-key: ${VAPID_PUBLIC_KEY:}
+  private-key: ${VAPID_PRIVATE_KEY:}
+  subject: ${VAPID_SUBJECT:mailto:admin@example.com}
+
+---
+# ---- local profile: zero-setup H2, for trying the app without a Neon account.
+# Run with: mvn spring-boot:run -Dspring-boot.run.profiles=local
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:h2:file:./data/cafetrek;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  sql:
+    init:
+      platform: h2
+server:
+  port: 8080

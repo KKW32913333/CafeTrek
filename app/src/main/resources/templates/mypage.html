@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/nav :: head('マイページ')}"></head>
+<body>
+<div class="page">
+  <div class="mp-cover"></div>
+  <div class="mp-profile">
+    <div class="mp-avatar">🧑</div>
+    <div class="mp-name" th:text="${user.name}">CoffeeLover</div>
+    <div class="mp-bio">カフェとコーヒーで、毎日をちょっと豊かに。</div>
+  </div>
+
+  <div class="mp-stats">
+    <div class="mp-stat"><b th:text="${stats.visitCount}">0</b><span>訪問数</span></div>
+    <div class="mp-stat"><b th:text="${stats.favoriteCount}">0</b><span>お気に入り</span></div>
+    <div class="mp-stat"><b th:text="${stats.badgeCount}">0</b><span>獲得バッジ</span></div>
+  </div>
+
+  <div class="notify-row">
+    <div>
+      <div class="label">通知</div>
+      <div class="sub">毎朝8時に「今日どこ行く？」をお知らせ</div>
+    </div>
+    <button class="btn-outline" style="width:auto; padding:9px 16px;" onclick="enablePushNotifications()">通知をオンにする</button>
+  </div>
+
+  <div class="section-title">コレクション</div>
+  <div class="collection-card">
+    <div class="badge">🏅</div>
+    <div style="flex:1;">
+      <div style="font-size:12.5px; font-weight:700;">Japanカフェマスター</div>
+      <div style="font-size:10.5px; color:var(--ink-soft); margin:2px 0 6px;">日本のカフェを50店舗訪問</div>
+      <div class="progress"><i th:style="'width:' + ${#numbers.formatDecimal(stats.visitCount * 100.0 / 50, 0, 0)} + '%'"></i></div>
+      <div class="progress-label"><span th:text="${stats.visitCount}">0</span> / 50</div>
+    </div>
+  </div>
+
+  <div class="section-title">コーヒー図鑑</div>
+  <div class="zukan-grid">
+    <p th:if="${#maps.isEmpty(stats.coffeeCountryBreakdown)}" style="grid-column:1/-1; font-size:11.5px; color:var(--ink-soft);">
+      まだコーヒーの記録がありません。記録画面から追加してみましょう。
+    </p>
+    <div class="zukan-item" th:each="entry : ${stats.coffeeCountryBreakdown}">
+      ☕
+      <div style="font-size:9.5px; color:var(--ink-soft); margin-top:4px;" th:text="${entry.key}">国名</div>
+      <b th:text="${entry.value}">0</b>
+    </div>
+  </div>
+
+  <div class="menu-list">
+    <div class="menu-row">🕘 訪問履歴</div>
+    <a class="menu-row" th:href="@{/map}">♡ お気に入り</a>
+    <a class="menu-row" th:href="@{/map}">🗺 カフェマップ</a>
+    <div class="menu-row">📖 コーヒー図鑑</div>
+    <div class="menu-row">🏅 実績・バッジ</div>
+    <div class="menu-row">⚙ 設定</div>
+  </div>
+
+  <div th:replace="~{fragments/nav :: bottomnav('mypage')}"></div>
+</div>
+<script src="/js/push.js"></script>
+</body>
+</html>

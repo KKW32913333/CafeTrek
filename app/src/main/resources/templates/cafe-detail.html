@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/nav :: head(cafe.name)}"></head>
+<body>
+<div class="page">
+  <div class="detail-photo photo" style="font-size:34px;">
+    ☕
+    <a th:href="@{/map}" style="position:absolute; top:14px; left:14px; width:32px; height:32px; border-radius:16px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center;">←</a>
+  </div>
+
+  <div class="detail-body">
+    <div class="title-row">
+      <h1 th:text="${cafe.name}">カフェ名</h1>
+      <form th:action="@{'/cafes/' + ${cafe.id} + '/favorite'}" method="post" style="margin:0;">
+        <input type="hidden" name="redirectTo" th:value="@{'/cafes/' + ${cafe.id}}">
+        <button type="submit" class="heart-btn" style="position:static;"
+                th:text="${cafe.favorite} ? '♥' : '♡'">♡</button>
+      </form>
+    </div>
+
+    <p class="rating-line" th:if="${cafe.rating}">
+      <span class="stars">★★★★☆</span> <span th:text="${#numbers.formatDecimal(cafe.rating,1,1)}">4.5</span>　・カフェ / コーヒー専門店
+    </p>
+
+    <div class="info-list">
+      <div th:if="${cafe.address}">📍 <span th:text="${cafe.address}"></span></div>
+      <div>🕐 営業時間　8:00 – 20:00</div>
+    </div>
+
+    <a class="gmap-link"
+       th:href="${cafe.latitude != null} ? ('https://www.google.com/maps/search/?api=1&query=' + ${cafe.latitude} + ',' + ${cafe.longitude}) : ('https://www.google.com/maps/search/?api=1&query=' + ${cafe.name})"
+       target="_blank" rel="noopener">🔗 Googleマップで見る</a>
+
+    <div class="section-title" style="margin:0 0 10px;">このカフェで飲んだコーヒー</div>
+    <div class="coffee-log-card" th:if="${!#lists.isEmpty(visits) && visits[0].coffeeName != null}">
+      <div class="photo">☕</div>
+      <div>
+        <div style="font-size:13px; font-weight:700;" th:text="${visits[0].coffeeName}">コーヒー名</div>
+        <div style="font-size:11px; color:var(--ink-soft); margin-top:3px;">
+          <span th:text="${#strings.listJoin(visits[0].tasteTags, ' / ')}">タグ</span>　★<span th:text="${visits[0].rating}">4</span>
+        </div>
+      </div>
+      <div class="price" th:if="${visits[0].price}">¥<span th:text="${visits[0].price}"></span></div>
+    </div>
+    <p th:if="${#lists.isEmpty(visits) || visits[0].coffeeName == null}" style="font-size:12px; color:var(--ink-soft); margin-bottom:20px;">
+      まだこのカフェでの記録がありません。
+    </p>
+
+    <a class="btn-primary" th:href="@{'/record/' + ${cafe.id}}">📝 このカフェを記録する</a>
+  </div>
+</div>
+</body>
+</html>

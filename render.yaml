@@ -1,0 +1,27 @@
+# Render "Blueprint" definition. Put at the REPO ROOT (not inside app/) so
+# Render's Blueprint auto-detection finds it. rootDir tells Render this is a
+# monorepo-style layout — Dockerfile and everything else it builds is read
+# relative to app/, which is also what fixes the "Dockerfile: no such file
+# or directory" error if you're setting this up by hand in the dashboard
+# instead: set Root Directory = app there too.
+services:
+  - type: web
+    name: cafetrek
+    runtime: docker
+    rootDir: app
+    dockerfilePath: Dockerfile
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        sync: false      # jdbc:postgresql://<neon-host>/<db>?sslmode=require&channelBinding=require
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        value: mailto:admin@example.com

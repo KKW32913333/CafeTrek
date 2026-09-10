@@ -1,0 +1,13 @@
+{
+  "name": "CafeTrek",
+  "short_name": "CafeTrek",
+  "description": "行ったカフェが、あなたのコーヒー旅になる。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#24352B",
+  "theme_color": "#24352B",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

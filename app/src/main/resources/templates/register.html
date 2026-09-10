@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/nav :: head('新規登録')}"></head>
+<body>
+<div class="auth-screen">
+  <h1>☕ CafeTrek</h1>
+  <p class="sub">アカウントを作成する</p>
+
+  <p class="error" th:if="${error}" th:text="${error}"></p>
+
+  <form th:action="@{/register}" method="post">
+    <input type="text" name="name" placeholder="お名前" th:value="${name}" required>
+    <input type="email" name="email" placeholder="メールアドレス" th:value="${email}" required>
+    <input type="password" name="password" placeholder="パスワード（8文字以上）" minlength="8" required>
+    <button type="submit" class="btn-primary">登録する</button>
+  </form>
+
+  <p class="switch">すでにアカウントをお持ちの方は <a th:href="@{/login}">ログイン</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/nav :: head('カフェを記録する')}"></head>
+<body>
+<div class="page">
+  <div class="app-header">
+    <b style="font-size:15.5px;">カフェを記録する</b>
+    <a th:href="@{'/cafes/' + ${cafe.id}}" style="font-size:18px; color:var(--ink-soft);">×</a>
+  </div>
+
+  <div class="rec-cafe">
+    <div class="photo">☕</div>
+    <div>
+      <div style="font-size:13px; font-weight:700;" th:text="${cafe.name}">カフェ名</div>
+      <div style="font-size:10.5px; color:var(--ink-soft); margin-top:2px;" th:text="${cafe.address}"></div>
+    </div>
+  </div>
+
+  <form th:action="@{'/record/' + ${cafe.id}}" method="post">
+
+    <div class="field">
+      <label>訪問日</label>
+      <input type="date" name="visitedAt" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required>
+    </div>
+
+    <div class="field">
+      <label>注文したコーヒー</label>
+      <input type="text" name="coffeeName" placeholder="例：エチオピア イルガチェフェ">
+    </div>
+
+    <div class="field">
+      <label>評価</label>
+      <div class="starpicker" id="starpicker">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+      </div>
+      <input type="hidden" name="rating" id="ratingInput" value="4">
+    </div>
+
+    <div class="field">
+      <label>味の特徴（複数選択可）</label>
+      <div class="tagwrap">
+        <input type="checkbox" id="t-acidity" name="taste" value="acidity"><label for="t-acidity">酸味</label>
+        <input type="checkbox" id="t-bitterness" name="taste" value="bitterness"><label for="t-bitterness">苦味</label>
+        <input type="checkbox" id="t-sweetness" name="taste" value="sweetness"><label for="t-sweetness">甘み</label>
+        <input type="checkbox" id="t-body" name="taste" value="body"><label for="t-body">コク</label>
+        <input type="checkbox" id="t-fruity" name="taste" value="fruity" checked><label for="t-fruity">フルーティー</label>
+        <input type="checkbox" id="t-nutty" name="taste" value="nutty"><label for="t-nutty">ナッツ系</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>カフェの雰囲気</label>
+      <div class="moodwrap">
+        <input type="radio" id="m-stylish" name="atmosphere" value="おしゃれ"><label for="m-stylish">✨<br>おしゃれ</label>
+        <input type="radio" id="m-quiet" name="atmosphere" value="静か" checked><label for="m-quiet">🤫<br>静か</label>
+        <input type="radio" id="m-lively" name="atmosphere" value="にぎやか"><label for="m-lively">🎉<br>にぎやか</label>
+        <input type="radio" id="m-work" name="atmosphere" value="作業向き"><label for="m-work">💻<br>作業向き</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>価格（円）</label>
+      <input type="number" name="price" placeholder="600">
+    </div>
+
+    <div class="field">
+      <label>感想</label>
+      <textarea name="comment" placeholder="このカフェの感想を書いてみましょう"></textarea>
+    </div>
+
+    <div class="save-wrap">
+      <button type="submit" class="btn-primary">保存する</button>
+    </div>
+  </form>
+</div>
+<script src="/js/record.js"></script>
+</body>
+</html>

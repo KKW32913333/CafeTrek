@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/nav :: head('ログイン')}"></head>
+<body>
+<div class="auth-screen">
+  <h1>☕ CafeTrek</h1>
+  <p class="sub">行ったカフェが、あなたのコーヒー旅になる。</p>
+
+  <p class="error" th:if="${param.error}">メールアドレスまたはパスワードが正しくありません。</p>
+  <p style="color:var(--green-deep); font-size:12.5px; text-align:center; margin-bottom:10px;" th:if="${param.registered}">
+    登録が完了しました。ログインしてください。
+  </p>
+
+  <form th:action="@{/login}" method="post">
+    <input type="email" name="username" placeholder="メールアドレス" required>
+    <input type="password" name="password" placeholder="パスワード" required>
+    <button type="submit" class="btn-primary">ログイン</button>
+  </form>
+
+  <p class="switch">アカウントをお持ちでない方は <a th:href="@{/register}">新規登録</a></p>
+  <p style="text-align:center; font-size:11px; color:var(--ink-soft); margin-top:24px;">
+    デモ用ログイン: coffeelover@example.com / password123
+  </p>
+</div>
+</body>
+</html>

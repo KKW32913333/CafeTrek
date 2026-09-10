@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <!-- Common <head> fragment: PWA manifest, CSS, CSRF meta tags for AJAX. -->
+  <th:block th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title th:text="${title} + ' | CafeTrek'">CafeTrek</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/css/style.css">
+    <meta name="theme-color" content="#24352B">
+    <meta name="_csrf" th:content="${_csrf.token}" content="">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" content="">
+    <script src="/js/csrf.js"></script>
+  </th:block>
+
+  <th:block th:fragment="header">
+    <div class="app-header">
+      <div class="logo">
+        <div class="mark">☕</div>
+        <b>CafeTrek</b>
+      </div>
+      <form th:action="@{/logout}" method="post" style="margin:0;">
+        <button type="submit" style="background:none;border:none;font-size:13px;color:var(--ink-soft);cursor:pointer;">ログアウト</button>
+      </form>
+    </div>
+  </th:block>
+
+  <th:block th:fragment="bottomnav(active)">
+    <nav class="bottom-nav">
+      <a th:href="@{/}" th:classappend="${active == 'home'} ? 'active'"><span class="ic">🏠</span>ホーム</a>
+      <a th:href="@{/map}" th:classappend="${active == 'map'} ? 'active'"><span class="ic">📍</span>地図</a>
+      <a th:href="@{/mypage}" th:classappend="${active == 'mypage'} ? 'active'"><span class="ic">👤</span>マイページ</a>
+    </nav>
+  </th:block>
+</head>
+<body></body>
+</html>
