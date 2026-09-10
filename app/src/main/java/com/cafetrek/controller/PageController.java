@@ -31,19 +31,27 @@ public class PageController {
     private String googleMapsApiKey;
 
     @GetMapping("/")
-    public String home(Model model, Authentication auth) {
+    public String home(Model model, Authentication auth,
+                        @RequestParam(required = false) Double lat,
+                        @RequestParam(required = false) Double lng) {
         User user = currentUserService.get(auth);
-        List<CafeResponse> cafes = cafeService.search(null, null, null, user.getId());
+        List<CafeResponse> cafes = cafeService.search(lat, lng, null, user.getId());
         model.addAttribute("user", user);
         model.addAttribute("cafes", cafes);
         return "home";
     }
 
     @GetMapping("/map")
-    public String map(Model model, Authentication auth) {
+    public String map(Model model, Authentication auth,
+                       @RequestParam(required = false) Double lat,
+                       @RequestParam(required = false) Double lng,
+                       @RequestParam(required = false) String keyword) {
         User user = currentUserService.get(auth);
-        model.addAttribute("cafes", cafeService.search(null, null, null, user.getId()));
+        model.addAttribute("cafes", cafeService.search(lat, lng, keyword, user.getId()));
         model.addAttribute("googleMapsApiKey", googleMapsApiKey);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("lat", lat);
+        model.addAttribute("lng", lng);
         return "map";
     }
 

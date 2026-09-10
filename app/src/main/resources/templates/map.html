@@ -5,7 +5,15 @@
 <div class="page">
   <div th:replace="~{fragments/nav :: header}"></div>
 
-  <div class="map-search">🔍 このエリアで検索</div>
+  <div class="map-search">
+    <form method="get" th:action="@{/map}" style="display:flex; align-items:center; gap:6px;">
+      <input type="hidden" name="lat" th:value="${lat} ?: ''">
+      <input type="hidden" name="lng" th:value="${lng} ?: ''">
+      <span>🔍</span>
+      <input type="text" name="keyword" th:value="${keyword} ?: ''" placeholder="カフェ名で検索"
+             style="border:none; background:transparent; outline:none; width:100%; font-size:13px; color:var(--ink); font-family:inherit;">
+    </form>
+  </div>
   <div class="chip-row" style="margin-top:10px;">
     <div class="chip active">すべて</div>
     <div class="chip">カフェ</div>
@@ -28,6 +36,9 @@
       </div>
       <span style="color:var(--heart); font-size:16px;" th:text="${c.favorite} ? '♥' : '♡'">♡</span>
     </a>
+    <p th:if="${#lists.isEmpty(cafes)}" style="padding:0 4px; font-size:12px; color:var(--ink-soft);">
+      該当するカフェが見つかりませんでした。
+    </p>
   </div>
 
   <div th:replace="~{fragments/nav :: bottomnav('map')}"></div>
@@ -39,17 +50,42 @@
     { id: /*[[${c.id}]]*/ 0, name: /*[[${c.name}]]*/ '', lat: /*[[${c.latitude}]]*/ null, lng: /*[[${c.longitude}]]*/ null },
     /*[/]*/
   ];
+  var serverLat = /*[[${lat}]]*/ null;
+  var serverLng = /*[[${lng}]]*/ null;
+
+  // 現在地パラメータがまだURLに無ければ、一度だけ取得してページを再読み込みする
+  (function () {
+    var params = new URLSearchParams(location.search);
+    if (!params.has("lat") && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        params.set("lat", pos.coords.latitude);
+        params.set("lng", pos.coords.longitude);
+        location.search = params.toString();
+      }, function () { /* 拒否された場合は何もしない（一覧はそのまま表示） */ });
+    }
+  })();
 
   function initMap() {
     var withCoords = cafeMarkers.filter(function (c) { return c.lat && c.lng; });
-    var center = withCoords.length > 0
-      ? { lat: withCoords[0].lat, lng: withCoords[0].lng }
-      : { lat: 33.5902, lng: 130.4017 }; // 福岡駅（カフェが1件も座標を持たない場合のフォールバック）
+    var center = (serverLat && serverLng)
+      ? { lat: serverLat, lng: serverLng }
+      : withCoords.length > 0
+        ? { lat: withCoords[0].lat, lng: withCoords[0].lng }
+        : { lat: 33.5902, lng: 130.4017 }; // フォールバック: 福岡駅
 
     var map = new google.maps.Map(document.getElementById("gmap"), {
       center: center,
       zoom: 14,
     });
+
+    if (serverLat && serverLng) {
+      new google.maps.Marker({
+        position: center,
+        map: map,
+        icon: { path: google.maps.SymbolPath.CIRCLE, scale: 7, fillColor: "#2E63E0", fillOpacity: 1, strokeColor: "#fff", strokeWeight: 2 },
+        title: "現在地",
+      });
+    }
 
     withCoords.forEach(function (c) {
       var marker = new google.maps.Marker({

@@ -31,8 +31,8 @@
 
   <th:block th:fragment="bottomnav(active)">
     <nav class="bottom-nav">
-      <a th:href="@{/}" th:classappend="${active == 'home'} ? 'active'"><span class="ic">🏠</span>ホーム</a>
       <a th:href="@{/map}" th:classappend="${active == 'map'} ? 'active'"><span class="ic">📍</span>地図</a>
+      <a th:href="@{/}" th:classappend="${active == 'home'} ? 'active'"><span class="ic">🏠</span>ホーム</a>
       <a th:href="@{/mypage}" th:classappend="${active == 'mypage'} ? 'active'"><span class="ic">👤</span>マイページ</a>
     </nav>
   </th:block>

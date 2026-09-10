@@ -48,5 +48,18 @@
 
   <div th:replace="~{fragments/nav :: bottomnav('home')}"></div>
 </div>
+
+<script>
+  (function () {
+    var params = new URLSearchParams(location.search);
+    if (params.get("lat") === null && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        params.set("lat", pos.coords.latitude);
+        params.set("lng", pos.coords.longitude);
+        location.search = params.toString();
+      }, function () { /* 拒否された場合は何もしない */ });
+    }
+  })();
+</script>
 </body>
 </html>
