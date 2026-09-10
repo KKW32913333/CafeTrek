@@ -36,21 +36,21 @@
     </p>
   </div>
 
-  <div class="section-title">あなたへのおすすめ</div>
-  <a class="card" style="display:flex; gap:12px; margin:0 18px 20px; padding:10px;"
-     th:if="${!#lists.isEmpty(cafes)}" th:href="@{'/cafes/' + ${cafes[0].id}}">
-    <div class="photo" style="width:88px; height:88px; border-radius:12px; flex:0 0 88px;" th:if="${cafes[0].photoUrl}"><img th:src="${cafes[0].photoUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></div>
-    <div class="photo" style="width:88px; height:88px; border-radius:12px; flex:0 0 88px;" th:unless="${cafes[0].photoUrl}">
-      <img src="/images/recommend.jpg" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
-    </div>
-    <div>
-      <div style="font-size:13px; font-weight:700;" th:text="${cafes[0].name}">カフェ名</div>
-      <div style="font-size:11.5px; color:var(--ink-soft); line-height:1.6; margin-top:4px;">
-        浅煎り・フルーティーなコーヒーが人気のお店です。
+  <div class="section-title" th:if="${!#lists.isEmpty(favorites)}">お気に入り</div>
+  <div class="hcard-row" th:if="${!#lists.isEmpty(favorites)}">
+    <a class="hcard" th:each="c,it : ${favorites}" th:href="@{'/cafes/' + ${c.id}}">
+      <div class="photo" th:if="${c.photoUrl}"><img th:src="${c.photoUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></div>
+      <div class="photo" th:unless="${c.photoUrl}">
+        <img th:src="${it.index % 2 == 0} ? '/images/nearby-1.jpg' : '/images/nearby-2.jpg'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
       </div>
-      <div style="font-size:11px; color:var(--green-deep); font-weight:700; margin-top:6px;">詳細を見る ›</div>
-    </div>
-  </a>
+      <div class="info">
+        <div class="name" th:text="${c.name}">カフェ名</div>
+        <div class="meta">
+          <span th:if="${c.rating}"><span class="stars">★</span> <span th:text="${#numbers.formatDecimal(c.rating,1,1)}">4.5</span></span>
+        </div>
+      </div>
+    </a>
+  </div>
 
   <div th:replace="~{fragments/nav :: bottomnav('home')}"></div>
 </div>

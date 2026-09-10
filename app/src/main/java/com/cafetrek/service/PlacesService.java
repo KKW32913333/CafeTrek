@@ -55,11 +55,27 @@ public class PlacesService {
      * into the local DB, and returns the (now-persisted) Cafe entities.
      * Returns an empty list, without error, if no server key is configured.
      */
+    // Remembers when we last hit the real Google API for a given (rounded) location,
+    // so repeatedly opening ホーム/地図 near the same spot doesn't re-call Places every
+    // time — this was making page loads feel slow. Rounding to 3 decimal places is
+    // roughly 100m of "same place" tolerance. In-memory only (resets on redeploy),
+    // which is fine: worst case is one extra live search after a restart.
+    private final java.util.Map<String, java.time.Instant> lastSearchedAt = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final java.time.Duration SEARCH_COOLDOWN = java.time.Duration.ofMinutes(10);
+
     public List<Cafe> searchNearby(double lat, double lng) {
         if (!isConfigured()) {
             log.warn("GOOGLE_PLACES_SERVER_API_KEY not configured — skipping live Places search.");
             return List.of();
         }
+
+        String key = String.format("%.3f,%.3f", lat, lng);
+        java.time.Instant last = lastSearchedAt.get(key);
+        if (last != null && java.time.Duration.between(last, java.time.Instant.now()).compareTo(SEARCH_COOLDOWN) < 0) {
+            log.debug("Skipping Places search for {} — searched within the last {} minutes.", key, SEARCH_COOLDOWN.toMinutes());
+            return List.of();
+        }
+        lastSearchedAt.put(key, java.time.Instant.now());
 
         List<Cafe> upserted = new ArrayList<>();
         try {

@@ -38,6 +38,7 @@ public class PageController {
         List<CafeResponse> cafes = cafeService.search(lat, lng, null, user.getId());
         model.addAttribute("user", user);
         model.addAttribute("cafes", cafes);
+        model.addAttribute("favorites", favoriteService.list(user.getId()));
         return "home";
     }
 

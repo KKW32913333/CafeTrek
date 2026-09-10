@@ -36,7 +36,10 @@ public class PlacePhotoController {
 
         try {
             byte[] bytes = placesService.fetchPhotoBytes(cafe.getPhotoReference());
-            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(bytes);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .cacheControl(org.springframework.http.CacheControl.maxAge(java.time.Duration.ofDays(1)).cachePublic())
+                    .body(bytes);
         } catch (Exception e) {
             log.warn("Failed to fetch Places photo for cafe {}: {}", cafeId, e.getMessage());
             return ResponseEntity.notFound().build();
