@@ -44,6 +44,3 @@ async function enablePushNotifications() {
   alert("通知をオンにしました。毎朝8時に「今日どこ行く？」の通知が届きます。");
 }
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/service-worker.js").catch(() => {});
-}

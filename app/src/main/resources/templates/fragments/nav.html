@@ -7,11 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title th:text="${title} + ' | CafeTrek'">CafeTrek</title>
     <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icons/icon-512.png">
     <link rel="stylesheet" href="/css/style.css">
     <meta name="theme-color" content="#24352B">
     <meta name="_csrf" th:attr="content=${_csrf.token}" content="">
     <meta name="_csrf_header" th:attr="content=${_csrf.headerName}" content="">
     <script src="/js/csrf.js"></script>
+    <script>if ("serviceWorker" in navigator) { navigator.serviceWorker.register("/service-worker.js").catch(() => {}); }</script>
   </th:block>
 
   <th:block th:fragment="header">
