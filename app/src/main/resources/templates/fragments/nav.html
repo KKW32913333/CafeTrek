@@ -9,8 +9,8 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="/css/style.css">
     <meta name="theme-color" content="#24352B">
-    <meta name="_csrf" th:content="${_csrf.token}" content="">
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" content="">
+    <meta name="_csrf" th:attr="content=${_csrf.token}" content="">
+    <meta name="_csrf_header" th:attr="content=${_csrf.headerName}" content="">
     <script src="/js/csrf.js"></script>
   </th:block>
 
