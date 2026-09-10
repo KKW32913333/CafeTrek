@@ -40,7 +40,7 @@ public class Cafe {
     private Double rating;
 
     /** Places API photo_reference — used to build a proxied image URL (see PlacePhotoController). */
-    @Column(length = 500)
+    @Column(length = 2000)
     private String photoReference;
 
     @Column(nullable = false, updatable = false)
