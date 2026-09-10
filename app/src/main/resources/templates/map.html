@@ -15,10 +15,14 @@
     </form>
   </div>
   <div class="chip-row" style="margin-top:10px;">
-    <div class="chip active">すべて</div>
-    <div class="chip">カフェ</div>
-    <div class="chip">スイーツ</div>
-    <div class="chip">作業向き</div>
+    <a class="chip" th:classappend="${filter == 'all'} ? ' active'"
+       th:href="@{/map(lat=${lat},lng=${lng},keyword=${keyword},filter='all')}">すべて</a>
+    <a class="chip" th:classappend="${filter == 'cafe'} ? ' active'"
+       th:href="@{/map(lat=${lat},lng=${lng},keyword=${keyword},filter='cafe')}">カフェ</a>
+    <a class="chip" th:classappend="${filter == 'sweets'} ? ' active'"
+       th:href="@{/map(lat=${lat},lng=${lng},keyword=${keyword},filter='sweets')}">スイーツ</a>
+    <a class="chip" th:classappend="${filter == 'work'} ? ' active'"
+       th:href="@{/map(lat=${lat},lng=${lng},keyword=${keyword},filter='work')}">作業向き</a>
   </div>
 
   <div id="gmap" style="margin:12px 18px; height:220px; border-radius:16px; border:1px solid var(--line);"></div>

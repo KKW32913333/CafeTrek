@@ -21,6 +21,8 @@ public class CafeResponse {
     private String photoUrl;
     /** The cafe's own homepage, if Places has one on file. */
     private String websiteUrl;
+    /** Comma-separated Google Places types (e.g. "cafe,bakery"); null for cafes without Places data. */
+    private String types;
 
     public static CafeResponse from(Cafe c) {
         CafeResponse r = new CafeResponse();
@@ -34,6 +36,7 @@ public class CafeResponse {
             r.setPhotoUrl("/api/places/photo/" + c.getId());
         }
         r.setWebsiteUrl(c.getWebsite());
+        r.setTypes(c.getTypes());
         return r;
     }
 }

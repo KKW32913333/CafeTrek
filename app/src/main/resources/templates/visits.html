@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/nav :: pagehead('訪問履歴')}"></head>
+<body>
+<div class="page">
+  <div class="app-header">
+    <b style="font-size:15.5px;">訪問履歴</b>
+    <a th:href="@{/mypage}" style="font-size:18px; color:var(--ink-soft);">×</a>
+  </div>
+
+  <div class="list" style="margin-top:10px;">
+    <div class="card" th:each="v : ${visits}" style="padding:12px; margin-bottom:10px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <div style="font-size:13px; font-weight:700;" th:text="${v.cafeName}">カフェ名</div>
+          <div style="font-size:11px; color:var(--ink-soft); margin-top:2px;" th:text="${v.visitedAt}">訪問日</div>
+        </div>
+        <div class="stars" style="font-size:13px;" th:if="${v.rating}">
+          <span th:each="i : ${#numbers.sequence(1,5)}" th:text="${i <= v.rating} ? '★' : '☆'"></span>
+        </div>
+      </div>
+
+      <div style="font-size:12px; margin-top:8px;" th:if="${v.coffeeName}">
+        ☕ <span th:text="${v.coffeeName}"></span>
+        <span th:if="${v.price}" style="color:var(--ink-soft);"> ・ ¥<span th:text="${v.price}"></span></span>
+      </div>
+      <div style="font-size:11.5px; color:var(--ink-soft); margin-top:6px; line-height:1.6;" th:if="${v.comment}" th:text="${v.comment}"></div>
+
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <a th:href="@{'/visits/' + ${v.id} + '/edit'}" class="btn-outline" style="flex:1; text-align:center;">編集</a>
+        <form th:action="@{'/visits/' + ${v.id} + '/delete'}" method="post" style="flex:1; margin:0;"
+              onsubmit="return confirm('この記録を削除しますか？元に戻せません。');">
+          <button type="submit" class="btn-outline" style="width:100%; color:var(--heart); border-color:var(--heart);">削除</button>
+        </form>
+      </div>
+    </div>
+
+    <p th:if="${#lists.isEmpty(visits)}" style="text-align:center; font-size:12px; color:var(--ink-soft); margin-top:30px;">
+      まだ訪問記録がありません。カフェを見つけて記録してみましょう。
+    </p>
+  </div>
+</div>
+</body>
+</html>

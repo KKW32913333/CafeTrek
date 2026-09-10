@@ -153,6 +153,14 @@ public class PlacesService {
         if (result.has("photos") && result.path("photos").isArray() && result.path("photos").size() > 0) {
             cafe.setPhotoReference(result.path("photos").get(0).path("photo_reference").asText(null));
         }
+        if (result.has("types") && result.path("types").isArray()) {
+            StringBuilder types = new StringBuilder();
+            result.path("types").forEach(t -> {
+                if (types.length() > 0) types.append(",");
+                types.append(t.asText());
+            });
+            cafe.setTypes(types.toString());
+        }
 
         boolean isNew = cafe.getId() == null;
         Cafe saved = cafeRepository.save(cafe);

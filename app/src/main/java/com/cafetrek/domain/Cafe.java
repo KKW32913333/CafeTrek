@@ -55,6 +55,10 @@ public class Cafe {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean websiteChecked = false;
 
+    /** Comma-separated Google Places "types" (e.g. "cafe,bakery,food,point_of_interest") — used by the map screen's category filter. */
+    @Column(length = 500)
+    private String types;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

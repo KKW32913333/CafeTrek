@@ -4,7 +4,7 @@
 <body>
 <div class="page">
   <div class="app-header">
-    <b style="font-size:15.5px;">カフェを記録する</b>
+    <b style="font-size:15.5px;" th:text="${visit != null} ? '記録を編集する' : 'カフェを記録する'">カフェを記録する</b>
     <a th:href="@{'/cafes/' + ${cafe.id}}" style="font-size:18px; color:var(--ink-soft);">×</a>
   </div>
 
@@ -17,16 +17,17 @@
     </div>
   </div>
 
-  <form th:action="@{'/record/' + ${cafe.id}}" method="post">
+  <form th:action="${visit != null} ? @{'/visits/' + ${visit.id}} : @{'/record/' + ${cafe.id}}" method="post">
 
     <div class="field">
       <label>訪問日</label>
-      <input type="date" name="visitedAt" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required>
+      <input type="date" name="visitedAt"
+             th:value="${visit != null} ? ${visit.visitedAt} : ${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required>
     </div>
 
     <div class="field">
       <label>注文したコーヒー</label>
-      <input type="text" name="coffeeName" placeholder="例：エチオピア イルガチェフェ">
+      <input type="text" name="coffeeName" th:value="${visit != null} ? ${visit.coffeeName} : ''" placeholder="例：エチオピア イルガチェフェ">
     </div>
 
     <div class="field">
@@ -34,43 +35,43 @@
       <div class="starpicker" id="starpicker">
         <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
       </div>
-      <input type="hidden" name="rating" id="ratingInput" value="4">
+      <input type="hidden" name="rating" id="ratingInput" th:value="${visit != null and visit.rating != null} ? ${visit.rating} : 4">
     </div>
 
     <div class="field">
       <label>味の特徴（複数選択可）</label>
       <div class="tagwrap">
-        <input type="checkbox" id="t-acidity" name="taste" value="acidity"><label for="t-acidity">酸味</label>
-        <input type="checkbox" id="t-bitterness" name="taste" value="bitterness"><label for="t-bitterness">苦味</label>
-        <input type="checkbox" id="t-sweetness" name="taste" value="sweetness"><label for="t-sweetness">甘み</label>
-        <input type="checkbox" id="t-body" name="taste" value="body"><label for="t-body">コク</label>
-        <input type="checkbox" id="t-fruity" name="taste" value="fruity" checked><label for="t-fruity">フルーティー</label>
-        <input type="checkbox" id="t-nutty" name="taste" value="nutty"><label for="t-nutty">ナッツ系</label>
+        <input type="checkbox" id="t-acidity" name="taste" value="acidity" th:checked="${visit != null and visit.tasteTags != null and #lists.contains(visit.tasteTags, '酸味')}"><label for="t-acidity">酸味</label>
+        <input type="checkbox" id="t-bitterness" name="taste" value="bitterness" th:checked="${visit != null and visit.tasteTags != null and #lists.contains(visit.tasteTags, '苦味')}"><label for="t-bitterness">苦味</label>
+        <input type="checkbox" id="t-sweetness" name="taste" value="sweetness" th:checked="${visit != null and visit.tasteTags != null and #lists.contains(visit.tasteTags, '甘み')}"><label for="t-sweetness">甘み</label>
+        <input type="checkbox" id="t-body" name="taste" value="body" th:checked="${visit != null and visit.tasteTags != null and #lists.contains(visit.tasteTags, 'コク')}"><label for="t-body">コク</label>
+        <input type="checkbox" id="t-fruity" name="taste" value="fruity" th:checked="${visit == null} ? true : ${visit.tasteTags != null and #lists.contains(visit.tasteTags, 'フルーティー')}"><label for="t-fruity">フルーティー</label>
+        <input type="checkbox" id="t-nutty" name="taste" value="nutty" th:checked="${visit != null and visit.tasteTags != null and #lists.contains(visit.tasteTags, 'ナッツ系')}"><label for="t-nutty">ナッツ系</label>
       </div>
     </div>
 
     <div class="field">
       <label>カフェの雰囲気</label>
       <div class="moodwrap">
-        <input type="radio" id="m-stylish" name="atmosphere" value="おしゃれ"><label for="m-stylish">✨<br>おしゃれ</label>
-        <input type="radio" id="m-quiet" name="atmosphere" value="静か" checked><label for="m-quiet">🤫<br>静か</label>
-        <input type="radio" id="m-lively" name="atmosphere" value="にぎやか"><label for="m-lively">🎉<br>にぎやか</label>
-        <input type="radio" id="m-work" name="atmosphere" value="作業向き"><label for="m-work">💻<br>作業向き</label>
+        <input type="radio" id="m-stylish" name="atmosphere" value="おしゃれ" th:checked="${visit != null and visit.atmosphere == 'おしゃれ'}"><label for="m-stylish">✨<br>おしゃれ</label>
+        <input type="radio" id="m-quiet" name="atmosphere" value="静か" th:checked="${visit == null} ? true : ${visit.atmosphere == '静か'}"><label for="m-quiet">🤫<br>静か</label>
+        <input type="radio" id="m-lively" name="atmosphere" value="にぎやか" th:checked="${visit != null and visit.atmosphere == 'にぎやか'}"><label for="m-lively">🎉<br>にぎやか</label>
+        <input type="radio" id="m-work" name="atmosphere" value="作業向き" th:checked="${visit != null and visit.atmosphere == '作業向き'}"><label for="m-work">💻<br>作業向き</label>
       </div>
     </div>
 
     <div class="field">
       <label>価格（円）</label>
-      <input type="number" name="price" placeholder="600">
+      <input type="number" name="price" th:value="${visit != null} ? ${visit.price} : ''" placeholder="600">
     </div>
 
     <div class="field">
       <label>感想</label>
-      <textarea name="comment" placeholder="このカフェの感想を書いてみましょう"></textarea>
+      <textarea name="comment" th:text="${visit != null} ? ${visit.comment} : ''" placeholder="このカフェの感想を書いてみましょう"></textarea>
     </div>
 
     <div class="save-wrap">
-      <button type="submit" class="btn-primary">保存する</button>
+      <button type="submit" class="btn-primary" th:text="${visit != null} ? '更新する' : '保存する'">保存する</button>
     </div>
   </form>
 </div>

@@ -11,6 +11,10 @@ public interface CafeVisitRepository extends JpaRepository<CafeVisit, Long> {
     long countByUserId(Long userId);
 
     @org.springframework.data.jpa.repository.Query(
+        "select distinct v.cafe.id from CafeVisit v where v.user.id = :userId and v.atmosphere = :atmosphere")
+    java.util.List<Long> findDistinctCafeIdsByUserIdAndAtmosphere(Long userId, String atmosphere);
+
+    @org.springframework.data.jpa.repository.Query(
         "select v.coffee.country as country, count(v) as cnt " +
         "from CafeVisit v where v.user.id = :userId and v.coffee is not null " +
         "group by v.coffee.country order by cnt desc")

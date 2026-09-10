@@ -26,6 +26,7 @@ public class PageController {
     private final VisitService visitService;
     private final StatsService statsService;
     private final CurrentUserService currentUserService;
+    private final com.cafetrek.repository.CafeVisitRepository cafeVisitRepository;
 
     @Value("${google.maps.api-key}")
     private String googleMapsApiKey;
@@ -46,13 +47,27 @@ public class PageController {
     public String map(Model model, Authentication auth,
                        @RequestParam(required = false) Double lat,
                        @RequestParam(required = false) Double lng,
-                       @RequestParam(required = false) String keyword) {
+                       @RequestParam(required = false) String keyword,
+                       @RequestParam(required = false, defaultValue = "all") String filter) {
         User user = currentUserService.get(auth);
-        model.addAttribute("cafes", cafeService.search(lat, lng, keyword, user.getId()));
+        java.util.List<CafeResponse> cafes = cafeService.search(lat, lng, keyword, user.getId());
+
+        if ("cafe".equals(filter)) {
+            cafes = cafes.stream().filter(c -> c.getTypes() != null && c.getTypes().contains("cafe")).collect(java.util.stream.Collectors.toList());
+        } else if ("sweets".equals(filter)) {
+            cafes = cafes.stream().filter(c -> c.getTypes() != null && c.getTypes().contains("bakery")).collect(java.util.stream.Collectors.toList());
+        } else if ("work".equals(filter)) {
+            java.util.Set<Long> workCafeIds = new java.util.HashSet<>(
+                    cafeVisitRepository.findDistinctCafeIdsByUserIdAndAtmosphere(user.getId(), "作業向き"));
+            cafes = cafes.stream().filter(c -> workCafeIds.contains(c.getId())).collect(java.util.stream.Collectors.toList());
+        }
+
+        model.addAttribute("cafes", cafes);
         model.addAttribute("googleMapsApiKey", googleMapsApiKey);
         model.addAttribute("keyword", keyword);
         model.addAttribute("lat", lat);
         model.addAttribute("lng", lng);
+        model.addAttribute("filter", filter);
         return "map";
     }
 
@@ -113,6 +128,62 @@ public class PageController {
 
         visitService.create(req);
         return "redirect:/mypage?saved";
+    }
+
+    @GetMapping("/visits")
+    public String visitHistory(Model model, Authentication auth) {
+        User user = currentUserService.get(auth);
+        model.addAttribute("visits", visitService.history(user.getId(), null));
+        return "visits";
+    }
+
+    @GetMapping("/visits/{visitId}/edit")
+    public String editVisitForm(@PathVariable Long visitId, Model model, Authentication auth) {
+        User user = currentUserService.get(auth);
+        com.cafetrek.dto.VisitResponse visit = visitService.getForEdit(visitId, user.getId());
+        model.addAttribute("cafe", cafeService.getById(visit.getCafeId(), user.getId()));
+        model.addAttribute("visit", visit);
+        return "record";
+    }
+
+    @PostMapping("/visits/{visitId}")
+    public String updateVisit(
+            @PathVariable Long visitId,
+            @RequestParam(required = false) String coffeeName,
+            @RequestParam String visitedAt,
+            @RequestParam(defaultValue = "5") Integer rating,
+            @RequestParam(required = false) Integer price,
+            @RequestParam(name = "taste", required = false) List<String> taste,
+            @RequestParam(required = false) String atmosphere,
+            @RequestParam(required = false) String comment,
+            Authentication auth) {
+
+        User user = currentUserService.get(auth);
+        taste = taste == null ? List.of() : taste;
+
+        com.cafetrek.dto.VisitRequest req = new com.cafetrek.dto.VisitRequest();
+        req.setCoffeeName(coffeeName);
+        req.setVisitedAt(java.time.LocalDate.parse(visitedAt));
+        req.setRating(rating);
+        req.setPrice(price);
+        req.setAcidity(taste.contains("acidity"));
+        req.setBitterness(taste.contains("bitterness"));
+        req.setSweetness(taste.contains("sweetness"));
+        req.setBody(taste.contains("body"));
+        req.setFruity(taste.contains("fruity"));
+        req.setNutty(taste.contains("nutty"));
+        req.setAtmosphere(atmosphere);
+        req.setComment(comment);
+
+        visitService.update(visitId, req, user.getId());
+        return "redirect:/visits?updated";
+    }
+
+    @PostMapping("/visits/{visitId}/delete")
+    public String deleteVisit(@PathVariable Long visitId, Authentication auth) {
+        User user = currentUserService.get(auth);
+        visitService.delete(visitId, user.getId());
+        return "redirect:/visits?deleted";
     }
 
     @GetMapping("/mypage")

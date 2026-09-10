@@ -67,6 +67,54 @@ public class VisitService {
         return toResponse(saved);
     }
 
+    /** Returns a visit for editing, but only if it belongs to userId (never leaks another user's record). */
+    public VisitResponse getForEdit(Long visitId, Long userId) {
+        CafeVisit v = ownedVisit(visitId, userId);
+        return toResponse(v);
+    }
+
+    @Transactional
+    public VisitResponse update(Long visitId, VisitRequest req, Long userId) {
+        CafeVisit v = ownedVisit(visitId, userId);
+
+        Coffee coffee = null;
+        if (req.getCoffeeName() != null && !req.getCoffeeName().isBlank()) {
+            coffee = resolveCoffee(req.getCoffeeName(), req.getCoffeeCountry());
+        }
+
+        v.setCoffee(coffee);
+        v.setVisitedAt(req.getVisitedAt());
+        v.setRating(req.getRating());
+        v.setPrice(req.getPrice());
+        v.setAcidity(req.isAcidity());
+        v.setBitterness(req.isBitterness());
+        v.setSweetness(req.isSweetness());
+        v.setBody(req.isBody());
+        v.setFruity(req.isFruity());
+        v.setNutty(req.isNutty());
+        v.setAtmosphere(req.getAtmosphere());
+        v.setComment(req.getComment());
+
+        return toResponse(visitRepository.save(v));
+    }
+
+    @Transactional
+    public void delete(Long visitId, Long userId) {
+        CafeVisit v = ownedVisit(visitId, userId);
+        photoRepository.findByVisitId(visitId).forEach(photoRepository::delete);
+        visitRepository.delete(v);
+    }
+
+    /** Loads a visit and throws unless it belongs to userId — keeps one user from editing/deleting another's records via a guessed URL. */
+    private CafeVisit ownedVisit(Long visitId, Long userId) {
+        CafeVisit v = visitRepository.findById(visitId)
+                .orElseThrow(() -> new EntityNotFoundException("visit not found: " + visitId));
+        if (!v.getUser().getId().equals(userId)) {
+            throw new EntityNotFoundException("visit not found: " + visitId);
+        }
+        return v;
+    }
+
     public List<VisitResponse> history(Long userId, Long cafeId) {
         List<CafeVisit> visits = (cafeId == null)
                 ? visitRepository.findByUserIdOrderByVisitedAtDesc(userId)
