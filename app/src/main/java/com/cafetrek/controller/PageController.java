@@ -4,6 +4,7 @@ import com.cafetrek.domain.User;
 import com.cafetrek.dto.CafeResponse;
 import com.cafetrek.service.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +27,9 @@ public class PageController {
     private final StatsService statsService;
     private final CurrentUserService currentUserService;
 
+    @Value("${google.maps.api-key}")
+    private String googleMapsApiKey;
+
     @GetMapping("/")
     public String home(Model model, Authentication auth) {
         User user = currentUserService.get(auth);
@@ -39,6 +43,7 @@ public class PageController {
     public String map(Model model, Authentication auth) {
         User user = currentUserService.get(auth);
         model.addAttribute("cafes", cafeService.search(null, null, null, user.getId()));
+        model.addAttribute("googleMapsApiKey", googleMapsApiKey);
         return "map";
     }
 

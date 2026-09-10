@@ -49,6 +49,10 @@ webpush:
   private-key: ${VAPID_PRIVATE_KEY:}
   subject: ${VAPID_SUBJECT:mailto:admin@example.com}
 
+google:
+  maps:
+    api-key: ${GOOGLE_MAPS_API_KEY:}
+
 ---
 # ---- local profile: zero-setup H2, for trying the app without a Neon account.
 # Run with: mvn spring-boot:run -Dspring-boot.run.profiles=local

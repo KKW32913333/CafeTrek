@@ -13,12 +13,7 @@
     <div class="chip">作業向き</div>
   </div>
 
-  <div class="map-canvas">
-    <div class="pin" style="left:50%; top:55%;">📍</div>
-    <div class="pin" th:each="c,it : ${cafes}"
-         th:style="'left:' + (18 + (it.index * 37) % 64) + '%; top:' + (16 + (it.index * 53) % 60) + '%;'">☕</div>
-    <div class="map-note">Google Maps APIキー未設定のためダミー表示です</div>
-  </div>
+  <div id="gmap" style="margin:12px 18px; height:220px; border-radius:16px; border:1px solid var(--line);"></div>
 
   <div class="list-header">
     <span>周辺のカフェ</span>
@@ -37,5 +32,37 @@
 
   <div th:replace="~{fragments/nav :: bottomnav('map')}"></div>
 </div>
+
+<script th:inline="javascript">
+  var cafeMarkers = [
+    /*[# th:each="c : ${cafes}"]*/
+    { id: /*[[${c.id}]]*/ 0, name: /*[[${c.name}]]*/ '', lat: /*[[${c.latitude}]]*/ null, lng: /*[[${c.longitude}]]*/ null },
+    /*[/]*/
+  ];
+
+  function initMap() {
+    var withCoords = cafeMarkers.filter(function (c) { return c.lat && c.lng; });
+    var center = withCoords.length > 0
+      ? { lat: withCoords[0].lat, lng: withCoords[0].lng }
+      : { lat: 33.5902, lng: 130.4017 }; // 福岡駅（カフェが1件も座標を持たない場合のフォールバック）
+
+    var map = new google.maps.Map(document.getElementById("gmap"), {
+      center: center,
+      zoom: 14,
+    });
+
+    withCoords.forEach(function (c) {
+      var marker = new google.maps.Marker({
+        position: { lat: c.lat, lng: c.lng },
+        map: map,
+        title: c.name,
+      });
+      marker.addListener("click", function () {
+        window.location.href = "/cafes/" + c.id;
+      });
+    });
+  }
+</script>
+<script th:src="'https://maps.googleapis.com/maps/api/js?key=' + ${googleMapsApiKey} + '&callback=initMap'" async defer></script>
 </body>
 </html>
