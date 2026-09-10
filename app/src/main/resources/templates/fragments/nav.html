@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <!-- Common <head> fragment: PWA manifest, CSS, CSRF meta tags for AJAX. -->
-  <th:block th:fragment="head(title)">
+  <th:block th:fragment="pagehead(title)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title th:text="${title} + ' | CafeTrek'">CafeTrek</title>
