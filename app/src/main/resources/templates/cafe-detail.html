@@ -6,7 +6,7 @@
   <div class="detail-photo photo" style="font-size:34px; overflow:hidden;">
     <img th:if="${cafe.photoUrl}" th:src="${cafe.photoUrl}" alt="" style="width:100%; height:100%; object-fit:cover;">
     <img th:unless="${cafe.photoUrl}" src="/images/cafe-detail-fallback.jpg" alt="" style="width:100%; height:100%; object-fit:cover;">
-    <a th:href="@{/map}" style="position:absolute; top:14px; left:14px; width:32px; height:32px; border-radius:16px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center;">←</a>
+    <a th:href="@{/map}" style="position:absolute; top:14px; left:14px; width:32px; height:32px; border-radius:16px; background:rgba(255,255,255,.9); color:#2C241C; font-size:15px; display:flex; align-items:center; justify-content:center;">←</a>
   </div>
 
   <div class="detail-body">
@@ -31,6 +31,8 @@
     <a class="gmap-link"
        th:href="${cafe.latitude != null} ? ('https://www.google.com/maps/search/?api=1&query=' + ${cafe.latitude} + ',' + ${cafe.longitude}) : ('https://www.google.com/maps/search/?api=1&query=' + ${cafe.name})"
        target="_blank" rel="noopener">🔗 Googleマップで見る</a>
+
+    <a class="gmap-link" style="margin-top:8px;" th:if="${cafe.websiteUrl}" th:href="${cafe.websiteUrl}" target="_blank" rel="noopener">🌐 公式サイトを見る</a>
 
     <div class="section-title" style="margin:0 0 10px;">このカフェで飲んだコーヒー</div>
     <div class="coffee-log-card" th:if="${!#lists.isEmpty(visits) && visits[0].coffeeName != null}">

@@ -53,6 +53,15 @@ public class CafeService {
 
     public CafeResponse getById(Long id, Long userId) {
         Cafe c = cafeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("cafe not found: " + id));
+
+        // Lazily fetch the website exactly once per cafe (cached via websiteChecked),
+        // so opening the detail screen repeatedly never re-calls Place Details.
+        if (!c.isWebsiteChecked() && c.getGooglePlaceId() != null) {
+            c.setWebsite(placesService.fetchWebsite(c.getGooglePlaceId()));
+            c.setWebsiteChecked(true);
+            c = cafeRepository.save(c);
+        }
+
         return toResponse(c, null, null, userId);
     }
 

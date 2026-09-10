@@ -34,6 +34,8 @@ public class PlacesService {
             "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=%s,%s&radius=1500&type=cafe&key=%s";
     private static final String PHOTO_URL =
             "https://maps.googleapis.com/maps/api/place/photo?maxwidth=640&photoreference=%s&key=%s";
+    private static final String DETAILS_URL =
+            "https://maps.googleapis.com/maps/api/place/details/json?place_id=%s&fields=website&key=%s";
 
     private final CafeRepository cafeRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -88,6 +90,33 @@ public class PlacesService {
         HttpRequest request = HttpRequest.newBuilder(URI.create(url)).GET().build();
         HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
         return response.body();
+    }
+
+    /**
+     * Fetches just the "website" field via Place Details, using a field mask
+     * so we're not billed for fields we don't need. Called lazily — once per
+     * cafe, ever — from CafeService.getById, and the result is cached on the
+     * Cafe row (website + websiteChecked) so repeat visits never call this again.
+     */
+    public String fetchWebsite(String googlePlaceId) {
+        if (!isConfigured() || googlePlaceId == null) {
+            return null;
+        }
+        try {
+            String url = String.format(DETAILS_URL, googlePlaceId, serverApiKey);
+            HttpRequest request = HttpRequest.newBuilder(URI.create(url)).GET().build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            JsonNode root = objectMapper.readTree(response.body());
+            if (!"OK".equals(root.path("status").asText())) {
+                log.warn("Place Details returned status={} for place_id={}", root.path("status").asText(), googlePlaceId);
+                return null;
+            }
+            return root.path("result").path("website").asText(null);
+        } catch (IOException | InterruptedException e) {
+            log.warn("Place Details (website) failed for {}: {}", googlePlaceId, e.getMessage());
+            Thread.currentThread().interrupt();
+            return null;
+        }
     }
 
     private Cafe upsertFromPlaceResult(JsonNode result) {

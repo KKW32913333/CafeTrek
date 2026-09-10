@@ -43,6 +43,13 @@ public class Cafe {
     @Column(length = 2000)
     private String photoReference;
 
+    /** The cafe's own homepage URL, from Places "Place Details" (fetched lazily — see PlacesService.fetchWebsite). */
+    @Column(length = 2000)
+    private String website;
+
+    /** True once we've asked Places for the website (even if it came back null) — avoids repeat Place Details calls. */
+    private boolean websiteChecked;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

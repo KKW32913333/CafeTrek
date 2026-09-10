@@ -19,6 +19,8 @@ public class CafeResponse {
     private int visitCount;
     /** Path to our own photo-proxy endpoint; null if this cafe has no Places photo on file. */
     private String photoUrl;
+    /** The cafe's own homepage, if Places has one on file. */
+    private String websiteUrl;
 
     public static CafeResponse from(Cafe c) {
         CafeResponse r = new CafeResponse();
@@ -31,6 +33,7 @@ public class CafeResponse {
         if (c.getPhotoReference() != null) {
             r.setPhotoUrl("/api/places/photo/" + c.getId());
         }
+        r.setWebsiteUrl(c.getWebsite());
         return r;
     }
 }
