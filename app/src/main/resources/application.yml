@@ -52,6 +52,8 @@ webpush:
 google:
   maps:
     api-key: ${GOOGLE_MAPS_API_KEY:}
+  places:
+    server-api-key: ${GOOGLE_PLACES_SERVER_API_KEY:}
 
 ---
 # ---- local profile: zero-setup H2, for trying the app without a Neon account.

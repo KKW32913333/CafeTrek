@@ -3,8 +3,9 @@
 <head th:replace="~{fragments/nav :: pagehead(cafe.name)}"></head>
 <body>
 <div class="page">
-  <div class="detail-photo photo" style="font-size:34px;">
-    ☕
+  <div class="detail-photo photo" style="font-size:34px; overflow:hidden;">
+    <img th:if="${cafe.photoUrl}" th:src="${cafe.photoUrl}" alt="" style="width:100%; height:100%; object-fit:cover;">
+    <span th:unless="${cafe.photoUrl}">☕</span>
     <a th:href="@{/map}" style="position:absolute; top:14px; left:14px; width:32px; height:32px; border-radius:16px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center;">←</a>
   </div>
 

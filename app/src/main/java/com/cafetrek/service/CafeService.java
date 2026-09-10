@@ -22,8 +22,18 @@ public class CafeService {
     private final CafeRepository cafeRepository;
     private final FavoriteRepository favoriteRepository;
     private final CafeVisitRepository visitRepository;
+    private final PlacesService placesService;
+
+    /** Cafes farther than this from the given location are hidden — keeps old demo/seed data from a different city out of the list. */
+    private static final double MAX_DISTANCE_METERS = 5000;
 
     public List<CafeResponse> search(Double lat, Double lng, String keyword, Long userId) {
+        if (lat != null && lng != null) {
+            // Refreshes the local DB with live Google Places results near (lat, lng).
+            // Safe to call even without a configured key: it just returns silently.
+            placesService.searchNearby(lat, lng);
+        }
+
         List<Cafe> cafes = (keyword == null || keyword.isBlank())
                 ? cafeRepository.findAll()
                 : cafeRepository.findByNameContainingIgnoreCase(keyword);
@@ -31,6 +41,9 @@ public class CafeService {
         List<CafeResponse> result = cafes.stream().map(c -> toResponse(c, lat, lng, userId)).collect(Collectors.toList());
 
         if (lat != null && lng != null) {
+            result = result.stream()
+                    .filter(r -> r.getDistanceMeters() == null || r.getDistanceMeters() <= MAX_DISTANCE_METERS)
+                    .collect(Collectors.toList());
             result.sort(Comparator.comparing(
                     CafeResponse::getDistanceMeters,
                     Comparator.nullsLast(Comparator.naturalOrder())));

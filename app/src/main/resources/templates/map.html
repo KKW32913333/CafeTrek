@@ -29,7 +29,8 @@
   </div>
   <div class="list">
     <a class="row" th:each="c : ${cafes}" th:href="@{'/cafes/' + ${c.id}}">
-      <div class="photo">☕</div>
+      <div class="photo" th:if="${c.photoUrl}"><img th:src="${c.photoUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></div>
+      <div class="photo" th:unless="${c.photoUrl}">☕</div>
       <div class="info">
         <div class="name" th:text="${c.name}">カフェ名</div>
         <div class="meta" th:if="${c.rating}"><span class="stars">★</span> <span th:text="${#numbers.formatDecimal(c.rating,1,1)}">4.5</span></div>

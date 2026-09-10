@@ -39,6 +39,10 @@ public class Cafe {
     /** Google's aggregate rating (0-5). CafeTrek's own per-user ratings live on CafeVisit. */
     private Double rating;
 
+    /** Places API photo_reference — used to build a proxied image URL (see PlacePhotoController). */
+    @Column(length = 500)
+    private String photoReference;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

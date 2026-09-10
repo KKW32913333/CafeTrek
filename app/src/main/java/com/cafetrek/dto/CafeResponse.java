@@ -17,6 +17,8 @@ public class CafeResponse {
     private Double distanceMeters;
     private boolean favorite;
     private int visitCount;
+    /** Path to our own photo-proxy endpoint; null if this cafe has no Places photo on file. */
+    private String photoUrl;
 
     public static CafeResponse from(Cafe c) {
         CafeResponse r = new CafeResponse();
@@ -26,6 +28,9 @@ public class CafeResponse {
         r.setLatitude(c.getLatitude());
         r.setLongitude(c.getLongitude());
         r.setRating(c.getRating());
+        if (c.getPhotoReference() != null) {
+            r.setPhotoUrl("/api/places/photo/" + c.getId());
+        }
         return r;
     }
 }
